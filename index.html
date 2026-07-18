@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plainvoice — the offline invoice &amp; quote maker that never phones home</title>
+<meta name="description" content="A private, offline invoice and quote generator you own forever. No signup, no watermark, no subscription. Your client data never leaves your machine. One file, one price.">
+<meta property="og:title" content="Plainvoice — private, offline invoicing you own forever">
+<meta property="og:description" content="No signup. No watermark. No subscription. Your data never leaves your machine. One file, $19 once.">
+<meta property="og:type" content="website">
+<style>
+  :root{
+    color-scheme: light;
+    --bg:        oklch(0.985 0.002 250);
+    --surface:   oklch(1 0 0);
+    --surface-2: oklch(0.972 0.003 250);
+    --border:    oklch(0.90 0.004 250);
+    --border-2:  oklch(0.83 0.006 250);
+    --ink:       oklch(0.24 0.012 255);
+    --ink-soft:  oklch(0.44 0.012 255);
+    --muted:     oklch(0.55 0.010 255);
+    --accent:    oklch(0.52 0.088 178);
+    --accent-ink:oklch(0.42 0.090 178);
+    --accent-bg: oklch(0.965 0.020 178);
+    --ok:        oklch(0.55 0.10 160);
+    --shadow:    0 1px 2px oklch(0.24 0.012 255 / 0.05), 0 6px 20px oklch(0.24 0.012 255 / 0.06);
+    --shadow-lg: 0 2px 4px oklch(0.24 0.012 255 / 0.06), 0 18px 50px oklch(0.24 0.012 255 / 0.12);
+    --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      color-scheme: dark;
+      --bg: oklch(0.19 0.008 255); --surface: oklch(0.235 0.010 255); --surface-2: oklch(0.275 0.010 255);
+      --border: oklch(0.34 0.010 255); --border-2: oklch(0.42 0.012 255);
+      --ink: oklch(0.95 0.004 250); --ink-soft: oklch(0.80 0.006 250); --muted: oklch(0.66 0.010 250);
+      --accent: oklch(0.74 0.10 178); --accent-ink: oklch(0.82 0.09 178); --accent-bg: oklch(0.30 0.035 178);
+      --shadow-lg: 0 2px 4px oklch(0 0 0 / 0.3), 0 20px 60px oklch(0 0 0 / 0.45);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{margin:0;font-family:var(--ui);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{margin:0;letter-spacing:-0.02em;text-wrap:balance;line-height:1.1}
+  p{margin:0}
+  a{color:inherit}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 clamp(18px,4vw,32px)}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:20;background:color-mix(in oklab,var(--bg) 82%,transparent);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  nav .wrap{display:flex;align-items:center;gap:14px;height:60px}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:650;letter-spacing:-0.02em}
+  .logo .mark{width:26px;height:26px;border-radius:7px;background:linear-gradient(150deg,var(--accent),var(--accent-ink));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px}
+  nav .sp{flex:1}
+  .cta{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;
+    background:var(--accent);color:#fff;font-weight:600;text-decoration:none;border:1px solid var(--accent);
+    transition:transform .12s cubic-bezier(.2,.8,.2,1),background .15s;white-space:nowrap}
+  .cta:hover{background:var(--accent-ink)}
+  .cta:active{transform:translateY(1px)}
+  .cta.big{padding:15px 30px;font-size:1.05rem;border-radius:12px}
+  .ghost{background:transparent;color:var(--ink);border:1px solid var(--border-2);text-decoration:none;
+    padding:10px 18px;border-radius:10px;font-weight:600;display:inline-flex;align-items:center;gap:8px;transition:.15s}
+  .ghost:hover{background:var(--surface-2)}
+
+  /* hero */
+  .hero{padding:clamp(48px,8vw,96px) 0 clamp(30px,5vw,54px);text-align:center}
+  .pill{display:inline-flex;align-items:center;gap:8px;font-size:0.8rem;font-weight:600;color:var(--accent-ink);
+    background:var(--accent-bg);padding:6px 14px;border-radius:999px;margin-bottom:22px}
+  .pill .dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+  .hero h1{font-size:clamp(2.1rem,6vw,3.9rem);max-width:16ch;margin:0 auto 20px}
+  .hero .sub{font-size:clamp(1.05rem,2.3vw,1.3rem);color:var(--ink-soft);max-width:56ch;margin:0 auto 32px;text-wrap:pretty}
+  .hero .buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+  .hero .micro{font-size:0.84rem;color:var(--muted)}
+  .hero .micro b{color:var(--ink-soft);font-weight:600}
+
+  .shot{margin:clamp(30px,5vw,56px) auto 0;max-width:960px;border-radius:16px;overflow:hidden;
+    border:1px solid var(--border);box-shadow:var(--shadow-lg);background:var(--surface)}
+  .shot img{display:block;width:100%;height:auto}
+
+  /* trust strip */
+  .trust{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(16px,4vw,44px);
+    padding:26px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-top:clamp(40px,6vw,68px)}
+  .trust div{display:flex;align-items:center;gap:9px;font-weight:600;font-size:0.92rem;color:var(--ink-soft)}
+  .trust svg{width:19px;height:19px;stroke:var(--accent);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+  section{padding:clamp(48px,8vw,88px) 0}
+  .eyebrow{color:var(--accent-ink);font-weight:650;font-size:0.92rem;margin-bottom:10px}
+  .lead{font-size:clamp(1.5rem,3.6vw,2.3rem);max-width:22ch;margin-bottom:16px}
+  .say{font-size:1.06rem;color:var(--ink-soft);max-width:60ch;text-wrap:pretty}
+
+  /* the wedge — comparison */
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:40px}
+  @media (max-width:720px){ .cmp{grid-template-columns:1fr} }
+  .cmp .col{border:1px solid var(--border);border-radius:var(--radius);padding:26px;background:var(--surface)}
+  .cmp .col.them{background:var(--surface-2)}
+  .cmp h3{font-size:1.05rem;margin-bottom:16px;display:flex;align-items:center;gap:9px}
+  .cmp ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+  .cmp li{display:flex;gap:11px;align-items:flex-start;font-size:0.95rem;color:var(--ink-soft)}
+  .cmp li svg{width:18px;height:18px;flex:0 0 auto;margin-top:2px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .cmp .them li svg{stroke:oklch(0.6 0.12 25)}
+  .cmp .us li svg{stroke:var(--ok)}
+  .cmp .us{border-color:color-mix(in oklab,var(--accent) 40%,var(--border));box-shadow:var(--shadow)}
+
+  /* features */
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:44px}
+  .feat{padding:4px}
+  .feat .ic{width:40px;height:40px;border-radius:10px;background:var(--accent-bg);display:grid;place-items:center;margin-bottom:14px}
+  .feat .ic svg{width:21px;height:21px;stroke:var(--accent-ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .feat h3{font-size:1.05rem;margin-bottom:7px}
+  .feat p{font-size:0.94rem;color:var(--ink-soft)}
+
+  /* pricing */
+  .price-sec{background:var(--surface-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .pcard{max-width:460px;margin:36px auto 0;background:var(--surface);border:1px solid var(--border-2);
+    border-radius:20px;padding:clamp(28px,4vw,40px);box-shadow:var(--shadow-lg);text-align:center}
+  .pcard .amt{font-size:clamp(3rem,8vw,4.2rem);font-weight:750;letter-spacing:-0.03em;line-height:1}
+  .pcard .amt small{font-size:1.1rem;color:var(--muted);font-weight:600;letter-spacing:0}
+  .pcard .once{color:var(--accent-ink);font-weight:600;margin:6px 0 24px}
+  .pcard ul{list-style:none;margin:0 0 28px;padding:0;text-align:left;display:flex;flex-direction:column;gap:12px}
+  .pcard li{display:flex;gap:11px;align-items:flex-start;font-size:0.96rem}
+  .pcard li svg{width:19px;height:19px;flex:0 0 auto;margin-top:2px;stroke:var(--ok);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .pcard .cta{width:100%;justify-content:center}
+  .pcard .guarantee{font-size:0.84rem;color:var(--muted);margin-top:16px}
+
+  /* faq */
+  details{border:1px solid var(--border);border-radius:12px;padding:2px 20px;margin-bottom:12px;background:var(--surface);transition:.15s}
+  details[open]{box-shadow:var(--shadow)}
+  summary{cursor:pointer;font-weight:600;padding:16px 0;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";font-size:1.4rem;color:var(--muted);font-weight:400;transition:transform .2s}
+  details[open] summary::after{transform:rotate(45deg)}
+  details p{padding:0 0 18px;color:var(--ink-soft);font-size:0.95rem}
+
+  footer{border-top:1px solid var(--border);padding:36px 0;text-align:center;color:var(--muted);font-size:0.86rem}
+  footer .honest{max-width:60ch;margin:0 auto 14px;font-size:0.82rem;opacity:0.9}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="logo" href="#top"><span class="mark">P</span> Plainvoice</a>
+  <span class="sp"></span>
+  <a class="ghost" href="#features">Features</a>
+  <a class="ghost" href="#pricing">Pricing</a>
+  <!-- ATTACH-CHECKOUT-HERE (nav) : swap href to live checkout URL -->
+  <a class="cta" href="#pricing" data-checkout>Get Plainvoice</a>
+</div></nav>
+
+<a id="top"></a>
+<header class="hero"><div class="wrap">
+  <span class="pill"><span class="dot"></span> Runs 100% offline — no account, ever</span>
+  <h1>Professional invoices that never leave your machine.</h1>
+  <p class="sub">Plainvoice is a single file. Open it, bill your client, export a clean PDF. Your business and client data stays on your device — no signup, no watermark, no subscription, no server to trust.</p>
+  <div class="buttons">
+    <!-- ATTACH-CHECKOUT-HERE (hero primary) : swap href to live checkout URL -->
+    <a class="cta big" href="#pricing" data-checkout>Get it — $19 once</a>
+    <a class="ghost" href="demo.html" style="padding:15px 26px">Try the live demo →</a>
+  </div>
+  <p class="micro"><b>One-time payment.</b> Yours to keep and use forever. Works on Mac, Windows, Linux — any browser.</p>
+
+  <div class="shot"><img src="assets/hero.png" alt="Plainvoice editor on the left, a live professional invoice preview on the right" loading="eager"></div>
+</div></header>
+
+<div class="wrap"><div class="trust">
+  <div><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V5z"/><path d="m9 12 2 2 4-4"/></svg> Private by design</div>
+  <div><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg> No monthly fees</div>
+  <div><svg viewBox="0 0 24 24"><path d="M12 3v12m0-12 4 4m-4-4-4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg> Exports real PDF</div>
+  <div><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg> No watermark</div>
+</div></div>
+
+<!-- The wedge -->
+<section id="why"><div class="wrap">
+  <div class="eyebrow">Why not just use a free web invoice maker?</div>
+  <h2 class="lead">Because "free" usually means <em>your data on someone else's server.</em></h2>
+  <p class="say">Most free invoice tools make you sign up, stamp their logo on your PDF, upsell you a subscription the moment you need a second invoice — and quietly store your clients' names, addresses and amounts in their database. Plainvoice does none of that. It has no database, because it has no server.</p>
+
+  <div class="cmp">
+    <div class="col them">
+      <h3><svg viewBox="0 0 24 24" style="stroke:oklch(0.6 0.12 25)"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></svg> Typical free invoice site</h3>
+      <ul>
+        <li><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg> Account &amp; email required before you can start</li>
+        <li><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg> Their watermark on your invoice (until you pay)</li>
+        <li><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg> "3 free, then $12/month" subscription wall</li>
+        <li><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg> Client &amp; financial data lives on their servers</li>
+        <li><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg> Gone the day the site shuts down</li>
+      </ul>
+    </div>
+    <div class="col us">
+      <h3><svg viewBox="0 0 24 24" style="stroke:var(--ok)"><path d="M12 2 4 5v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V5z"/><path d="m9 12 2 2 4-4"/></svg> Plainvoice</h3>
+      <ul>
+        <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Open the file — start billing in 10 seconds, no signup</li>
+        <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Clean PDF, your logo, zero watermark</li>
+        <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Pay once, use it for every invoice forever</li>
+        <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Nothing uploaded — there is literally no server</li>
+        <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> One file on your drive — it can't be shut down</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- Features -->
+<section id="features"><div class="wrap">
+  <div class="eyebrow">Everything you need to bill</div>
+  <h2 class="lead">Small enough to trust. Complete enough to run on.</h2>
+  <div class="grid3">
+    <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg></div>
+      <h3>Invoices &amp; quotes</h3><p>Flip between an invoice and a quote with one click. Numbering, issue &amp; due dates, and the right labels update automatically.</p></div>
+    <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <h3>Currency &amp; tax, done right</h3><p>14 currencies with correct formatting (including zero-decimal like ¥), percentage or flat discounts, and any tax label — VAT, GST, sales tax. Totals computed to the cent.</p></div>
+    <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></div>
+      <h3>Your brand, your colour</h3><p>Drop in your logo and pick an accent colour. The document looks like <em>you</em> sent it, not like a template.</p></div>
+    <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg></div>
+      <h3>Pixel-perfect PDF</h3><p>Export uses your browser's own print engine — crisp, selectable text, A4, and nothing but the invoice. No blurry image, no watermark.</p></div>
+    <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/><path d="M4 12v6a2 2 0 0 0 2 2h12"/></svg></div>
+      <h3>Remembers your clients</h3><p>Save the clients you bill often and reload them in one tap. Save your whole setup as a file you own — carry it to any device.</p></div>
+    <div class="feat"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.5 8 8 10 4.5-2 8-5 8-10V5z"/></svg></div>
+      <h3>Truly offline</h3><p>Turn off your wifi and it still works — perfectly. No telemetry, no fonts phoning home, no analytics. Verify it yourself; the whole thing is one readable file.</p></div>
+  </div>
+</div></section>
+
+<!-- Pricing -->
+<section id="pricing" class="price-sec"><div class="wrap" style="text-align:center">
+  <div class="eyebrow">Simple, honest pricing</div>
+  <h2 class="lead" style="margin-inline:auto">One file. One price. Yours forever.</h2>
+  <div class="pcard">
+    <div class="amt"><small>$</small>19</div>
+    <div class="once">one-time — no subscription, ever</div>
+    <ul>
+      <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> The complete Plainvoice app (single file)</li>
+      <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Unlimited invoices &amp; quotes, forever</li>
+      <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Works offline on any device you own</li>
+      <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Free updates to the current major version</li>
+      <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> No account, no data collection, no watermark</li>
+    </ul>
+    <!-- ============================================================= -->
+    <!--  ATTACH-CHECKOUT-HERE (primary purchase button)               -->
+    <!--  Replace href with the live checkout link once finalized.     -->
+    <!--  Buyer pays into fire17's account; on success they download   -->
+    <!--  plainvoice.html. See CHECKOUT.md for the full wiring plan.   -->
+    <!-- ============================================================= -->
+    <a class="cta big" href="#" data-checkout id="buy">Buy Plainvoice — $19</a>
+    <p class="guarantee">Instant download after checkout · 14-day money-back, no questions asked</p>
+  </div>
+</div></section>
+
+<!-- FAQ -->
+<section id="faq"><div class="wrap" style="max-width:760px">
+  <div class="eyebrow" style="text-align:center">Questions</div>
+  <h2 class="lead" style="margin:0 auto 36px;text-align:center">Straight answers</h2>
+  <details><summary>How is this different from the free invoice generators I can Google?</summary>
+    <p>Free web generators run on someone else's server. To use them you sign up, and the invoice details you type — client names, addresses, amounts — travel to and are stored by that company. Many watermark your PDF or cap you at a few invoices before a monthly fee. Plainvoice runs entirely inside your own browser from a single file on your disk. There is no server to send data to, no account, no watermark, and no recurring charge.</p></details>
+  <details><summary>Where is my data stored?</summary>
+    <p>On your machine only. Plainvoice keeps your current work in your browser and lets you export a small backup file (<code>.plainvoice.json</code>) that you own and control. You can back it up, move it between computers, or delete it — it's your file. Nothing is ever uploaded.</p></details>
+  <details><summary>Do I need to install anything or be online?</summary>
+    <p>No. Double-click the file and it opens in your browser. It works with the internet completely off. Nothing to install, no dependencies, no updates forced on you.</p></details>
+  <details><summary>How do I get a PDF to send my client?</summary>
+    <p>Click <b>Export PDF</b>. Plainvoice uses your browser's built-in print-to-PDF, so the result is crisp, has selectable text, and contains only the invoice — no app buttons, no watermark. Save it, email it, done.</p></details>
+  <details><summary>Can I use my own logo and currency?</summary>
+    <p>Yes. Add your logo, choose your accent colour, and pick from 14 currencies with correct formatting and any tax label you need (VAT, GST, sales tax, or none).</p></details>
+  <details><summary>What if it doesn't work for me?</summary>
+    <p>14-day money-back guarantee, no questions asked. It's a small tool doing one job well; if it's not for you, you get a refund.</p></details>
+</div></section>
+
+<section style="text-align:center;padding-top:0">
+  <div class="wrap">
+    <h2 class="lead" style="margin-inline:auto;font-size:clamp(1.7rem,4vw,2.6rem)">Bill your next client in the next two minutes.</h2>
+    <p class="say" style="margin:14px auto 30px">No signup to sit through. Just your invoice, your brand, your data.</p>
+    <!-- ATTACH-CHECKOUT-HERE (footer CTA) -->
+    <a class="cta big" href="#pricing" data-checkout>Get Plainvoice — $19 once</a>
+  </div>
+</section>
+
+<footer><div class="wrap">
+  <p class="honest">Plainvoice runs locally in your browser and makes no network requests. Screenshots show the actual product. PDF export uses your browser's print engine. "14 currencies" and "offline" are literal and testable — open the file with your network disconnected.</p>
+  <p>© Plainvoice · a private, offline invoice &amp; quote maker · <a href="demo.html" style="color:var(--accent-ink)">try the demo</a></p>
+</div></footer>
+
+</body>
+</html>
